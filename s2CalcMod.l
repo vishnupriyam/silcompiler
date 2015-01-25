@@ -13,8 +13,12 @@
 %% 
 
 [0-9]+		{number = atoi(yytext);yylval.nptr = mkLeafNode(number);return NUM;}	/*return the number*/
-[-+*()\n/]  	{return *yytext;}	/*\n indicates newline , and set of operations , and parenthesis */	
+[+]	  	{yylval.op = yytext[0];return PLUS;}	/*\n indicates newline , and set of operations , and parenthesis */
+[-]	  	{yylval.op = yytext[0];return MINUS;}
+[*]	  	{yylval.op = yytext[0];return MUL;}
+[/]	  	{yylval.op = yytext[0];return DIV;}	
 [ \t] 		;	/*ignore whitespaces*/
+[()\n]		{return *yytext;}
 . 		printf("Unknown character");
 
 %% 

@@ -12,23 +12,25 @@ struct Node * root;
 
 %union{
 	int ival;
+	char op;
 	struct Node * nptr;
 };
 
-%token NUM;
+%token NUM PLUS MINUS MUL DIV
+%type <char> PLUS MINUS MUL DIV
 %type <nptr> NUM;
 %type <nptr> expr;
-%left '+' '-'
-%left '*' '/'
+%left PLUS MINUS
+%left MUL DIV
 
 %% 
 start : expr '\n'		{root=$1;printf("\nComplete , ans is %d\n",evaluate($1));exit(1);} 
 	; 
 
-expr:  expr '+' expr		{$$ = mkOperatorNode('+',$1,$3);/*printf("+ ");*/} 
-	| expr '*' expr		{$$ = mkOperatorNode('*',$1,$3);/*printf("* ");*/} 
-	| expr '-' expr		{$$ = mkOperatorNode('-',$1,$3);/*printf("- ");*/}
-	| expr '/' expr		{$$ = mkOperatorNode('/',$1,$3);/*printf("/ ");*/}
+expr:  expr PLUS expr		{$$ = mkOperatorNode('+',$1,$3);/*printf("+ ");*/} 
+	| expr MUL expr		{$$ = mkOperatorNode('*',$1,$3);/*printf("* ");*/} 
+	| expr MINUS expr	{$$ = mkOperatorNode('-',$1,$3);/*printf("- ");*/}
+	| expr DIV expr		{$$ = mkOperatorNode('/',$1,$3);/*printf("/ ");*/}
 	| '(' expr ')'	 	{$$ = $2; }
 	| NUM		 	{$$ = $1;/*printf("%d  ",yylval.ival);*/}
 	; 
