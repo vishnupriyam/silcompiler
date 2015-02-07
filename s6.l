@@ -25,9 +25,9 @@ lt 	[<]
 
 {digit}+	{number=atoi(yytext);yylval.nptr = TreeCreate(TYPE_INT,NODETYPE_LEAF,number,NULL,NULL,NULL,NULL,NULL);return NUM;}
 [;]   		 {return DELIM;}
-"="    	 {return ASGN;}
-"["    	{return *yytext;}
-"]"    	{return *yytext;}
+"="    	 	{return ASGN;}
+"["    		{return *yytext;}
+"]"    		{return *yytext;}
 "decl"    	{return DECL;}
 "enddecl"	{return ENDDECL;}
 "read"  	{return READ;}
@@ -38,9 +38,9 @@ lt 	[<]
 "endif" 	{return ENDIF;}
 "while" 	{return WHILE;}
 "do"    	{return DO;}
-"endwhile"  {return ENDWHILE;}
-"integer"   {return INT;}
-"boolean"   {return BOOL;}
+"endwhile"  	{return ENDWHILE;}
+"integer"   	{return INT;}
+"boolean"   	{return BOOL;}
 "true"  	{yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_LEAF,1,NULL,NULL,NULL,NULL,NULL);return TTRUE;}
 "false" 	{yylval.nptr = TreeCreate(TYPE_BOOLEAN,NODETYPE_LEAF,0,NULL,NULL,NULL,NULL,NULL);return TFALSE;}
 {plus}  	{return PLUS;}
@@ -48,7 +48,10 @@ lt 	[<]
 {mul}   	{return MUL;}
 {gt}    	{return GT;}
 {lt}    	{return LT;}
-"=="   	{return EQ;}
+"=="   		{return EQ;}
+">="		{return GE;}
+"<="		{return LE;}
+"!="		{return NE;}
 {NL}    	;
 {whitespaces} ;
 [()]    	{return *yytext;}

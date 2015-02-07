@@ -22,6 +22,10 @@
 #define NODETYPE_ARR_ASGN 18
 #define NODETYPE_ARR_READ 19
 #define NODETYPE_ARR_ID 20
+#define NODETYPE_GE 21
+#define NODETYPE_LE 22
+#define NODETYPE_NE 23
+
 
 struct Tnode {
 
