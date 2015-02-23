@@ -11,6 +11,7 @@
 	#include "symboltable.c"
 	#include "abstracttree.c"
 	struct Tnode *root;
+        int decl_type;
 %}
 
 %union{
@@ -72,21 +73,29 @@ declist : declist dec   {}
 	| dec   {}
 	;
 
-dec : INT intlist DELIM {}
-	| BOOL boollist DELIM {}
+type : INT 	{decl_type = STYPE_INT;}
+	| BOOL	{decl_type = STYPE_BOOLEAN;}
+        ;
+
+dec : type idlist DELIM
 	;
 
-intlist : intlist COMMA ID  		{Ginstall($3->NAME,STYPE_INT,1,NULL);}
-	| intlist COMMA ID '[' NUM ']'  {Ginstall($3->NAME,STYPE_ARR_INT,$5->VALUE,NULL);}
-	| ID            		{Ginstall($1->NAME,STYPE_INT,1,NULL);}
-	| ID '[' NUM ']'		{Ginstall($1->NAME,STYPE_ARR_INT,$3->VALUE,NULL);}
-	;
 
-boollist : boollist COMMA ID 		{Ginstall($3->NAME,STYPE_BOOLEAN,1,NULL);}
-	| boollist COMMA ID '[' NUM ']' {Ginstall($3->NAME,STYPE_ARR_BOOLEAN,$5->VALUE,NULL);}
-	| ID            		{Ginstall($1->NAME,STYPE_BOOLEAN,1,NULL);}
-	| ID '[' NUM ']'		{Ginstall($1->NAME,STYPE_ARR_BOOLEAN,$3->VALUE,NULL);}
-	;
+idlist : idlist COMMA ID		{Ginstall($3->NAME,decl_type,1,NULL);}
+       | idlist COMMA ID '[' NUM ']'	{
+						switch(decl_type){
+							case STYPE_INT : Ginstall($3->NAME,STYPE_ARR_INT,$5->VALUE,NULL);break;
+							case STYPE_BOOLEAN : Ginstall($3->NAME,STYPE_ARR_BOOLEAN,$5->VALUE,NULL);break;
+						}	
+					}
+       | ID				{Ginstall($1->NAME,decl_type,1,NULL);}
+       | ID '[' NUM ']'			{
+						switch(decl_type){
+							case STYPE_INT : Ginstall($1->NAME,STYPE_ARR_INT,$3->VALUE,NULL);break;
+							case STYPE_BOOLEAN : Ginstall($1->NAME,STYPE_ARR_BOOLEAN,$3->VALUE,NULL);break;
+						}	
+					}
+
 
 slist : slist stmt  	{$$ = TreeCreate(TYPE_VOID,NODETYPE_NONE,0,NULL,NULL,$1,$2,NULL);}
 	| stmt      	{$$ = $1;}

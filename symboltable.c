@@ -45,11 +45,8 @@ void Ginstall(char* name, int type,int size,struct ArgStruct *Arglist){
    	 Ghead = temp;   	 
    	 return;    
     }
-    temp1 = Ghead;
-    while(temp1->next != NULL){
-   	 temp1 = temp1->next;
-    }
-    temp1->next = temp;
+    temp->next= Ghead;
+    Ghead = temp;
     return;
 }
 
