@@ -19,6 +19,9 @@
 #define NODETYPE_DO 15
 #define NODETYPE_ENDWHILE 16
 #define NODETYPE_NONE 17
+#define NODETYPE_GE 21
+#define NODETYPE_LE 22
+#define NODETYPE_NE 23
 
 int* value[26];
 

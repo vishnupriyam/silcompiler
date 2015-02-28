@@ -1,6 +1,7 @@
 FILE *fp;
 
 int reg_count = -1,label_count = -1;
+int k;
 
 void generate_code(struct Tnode *tree){
 	fp = fopen("intercode","w+");
@@ -86,34 +87,70 @@ int gen_code_eval(struct Tnode *tree){
    				 	break;
    		 	}
    			break;
-		/*
+		
 		case TYPE_BOOLEAN:
 			switch(tree->NODETYPE){
-   				case NODETYPE_GT:
+   				case NODETYPE_GT:	
+					i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"GT R%d R%d\n",i,j);
+					free_register();
+					return i;					
    					break;
    				case NODETYPE_LT:
-   					break;
+					i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"LT R%d R%d\n",i,j);									
+					free_register();
+					return i;   					
+					break;
    			 	case NODETYPE_EQ:
+					i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"EQ R%d R%d\n",i,j);
+					free_register();
+					return i;									
    					break;
    			 	case NODETYPE_GE:
-           			break;
-         		case NODETYPE_LE:
-           			break;
-         		case NODETYPE_NE:
-           			break;
-         		case NODETYPE_LEAF:
+           			i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"GE R%d R%d\n",i,j);
+					free_register();
+					return i;									
    					break;
+         		case NODETYPE_LE:
+           			i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"LE R%d R%d\n",i,j);
+					free_register();
+					return i;									
+   					break;
+         		case NODETYPE_NE:
+           			i = gen_code_eval(tree->Ptr1);
+					j = gen_code_eval(tree->Ptr2);
+					fprintf(fp,"NE R%d R%d\n",i,j);
+					free_register();
+					return i;									
+   					break;
+         		case NODETYPE_LEAF:
+   					i = get_register();
+					fprintf(fp, "MOV R%d %d\n",i,tree->VALUE);
+   				 	return i;
+   				 	break;
          		case NODETYPE_ID:
+					i = get_register();
+					fprintf(fp,"MOV R%d [%d]\n",i,tree->Ptr1->NAME[0] - 'a');	            	
+					return i;
            			break;
-         		case NODETYPE_ARR_ID:
-           			break;
+         		//case NODETYPE_ARR_ID:
+           		//	break;
    			 	default:
    					printf("Error : Unknown NODETYPE under TYPE_BOOLEAN\n");
    				 	exit(1);
    					break;
    		 	}   		 
 			break;
-		*/
+
 		case TYPE_VOID:
 			switch(tree->NODETYPE){
 				case NODETYPE_ASGN:
@@ -136,10 +173,34 @@ int gen_code_eval(struct Tnode *tree){
 					fprintf(fp, "OUT R%d\n",i);
 					free_register();
 					break;
-				//case NODETYPE_IF:
-				//	break;
-				//case NODETYPE_WHILE:
-				//	break;
+				case NODETYPE_IF:
+					i = gen_code_eval(tree->Ptr1);
+					j = get_label();
+					fprintf(fp, "JZ R%d L%d\n",i,j);
+					gen_code_eval(tree->Ptr2);
+					if(tree->Ptr3 != NULL){	
+						k = get_label();
+						fprintf(fp,"JMP L%d\n",k);
+						fprintf(fp,"L%d:\n",j);
+						gen_code_eval(tree->Ptr3);
+						fprintf(fp,"L%d:\n",k);
+					}
+					else{
+						fprintf(fp,"L%d:\n",j);
+					}
+					free_register();						
+					break;
+				case NODETYPE_WHILE:
+					i = get_label();
+					k = get_label();
+					fprintf(fp,"L%d:\n",i);
+					j = gen_code_eval(tree->Ptr1);
+					fprintf(fp,"JZ R%d L%d\n",j,k);
+					free_register();
+					gen_code_eval(tree->Ptr2);
+					fprintf(fp,"JMP L%d\n",i);
+					fprintf(fp,"L%d:\n",k);				
+					break;
 				case NODETYPE_ID:
 					i = get_register();
 					fprintf(fp,"MOV R%d [%d]\n",i,tree->NAME[0] - 'a');	            	
